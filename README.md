@@ -13,7 +13,12 @@ Once you have these dependencies installed, you can build the project using Mave
 ```
 mvn clean package
 ```
-Usage
+
+### Diagram
+
+![alt text](./docs/Minerva%202.0%20-%20Flink.png)
+
+### Usage
 To use the async HTTP client in your Flink application, you can create an instance of the AsyncHttpClient class and call its sendAsync() method to make asynchronous HTTP requests. Here's an example:
 
 ```
