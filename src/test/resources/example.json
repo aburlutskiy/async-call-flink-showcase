@@ -1,0 +1,223 @@
+{
+  "schema": {
+    "name": "collection.Envelope",
+    "optional": true,
+    "type": "struct",
+    "fields": [
+      {
+        "field": "after",
+        "name": "io.debezium.data.Json",
+        "optional": true,
+        "type": "string",
+        "version": 1
+      },
+      {
+        "field": "patch",
+        "name": "io.debezium.data.Json",
+        "optional": true,
+        "type": "string",
+        "version": 1
+      },
+      {
+        "field": "filter",
+        "name": "io.debezium.data.Json",
+        "optional": true,
+        "type": "string",
+        "version": 1
+      },
+      {
+        "field": "updateDescription",
+        "name": "io.debezium.connector.mongodb.changestream.updatedescription",
+        "optional": true,
+        "type": "struct",
+        "fields": [
+          {
+            "field": "removedFields",
+            "optional": true,
+            "type": "array",
+            "items": {
+              "optional": false,
+              "type": "string"
+            }
+          },
+          {
+            "field": "updatedFields",
+            "name": "io.debezium.data.Json",
+            "optional": true,
+            "type": "string",
+            "version": 1
+          },
+          {
+            "field": "truncatedArrays",
+            "optional": true,
+            "type": "array",
+            "items": {
+              "name": "io.debezium.connector.mongodb.changestream.truncatedarray",
+              "optional": false,
+              "type": "struct",
+              "fields": [
+                {
+                  "field": "field",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "field": "size",
+                  "optional": false,
+                  "type": "int32"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "field": "source",
+        "name": "io.debezium.connector.mongo.Source",
+        "optional": false,
+        "type": "struct",
+        "fields": [
+          {
+            "field": "version",
+            "optional": false,
+            "type": "string"
+          },
+          {
+            "field": "connector",
+            "optional": false,
+            "type": "string"
+          },
+          {
+            "field": "name",
+            "optional": false,
+            "type": "string"
+          },
+          {
+            "field": "ts_ms",
+            "optional": false,
+            "type": "int64"
+          },
+          {
+            "default": "false",
+            "field": "snapshot",
+            "name": "io.debezium.data.Enum",
+            "optional": true,
+            "type": "string",
+            "version": 1,
+            "parameters": {
+              "allowed": "true,last,false,incremental"
+            }
+          },
+          {
+            "field": "db",
+            "optional": false,
+            "type": "string"
+          },
+          {
+            "field": "sequence",
+            "optional": true,
+            "type": "string"
+          },
+          {
+            "field": "rs",
+            "optional": false,
+            "type": "string"
+          },
+          {
+            "field": "collection",
+            "optional": false,
+            "type": "string"
+          },
+          {
+            "field": "ord",
+            "optional": false,
+            "type": "int32"
+          },
+          {
+            "field": "h",
+            "optional": true,
+            "type": "int64"
+          },
+          {
+            "field": "tord",
+            "optional": true,
+            "type": "int64"
+          },
+          {
+            "field": "stxnid",
+            "optional": true,
+            "type": "string"
+          },
+          {
+            "field": "lsid",
+            "optional": true,
+            "type": "string"
+          },
+          {
+            "field": "txnNumber",
+            "optional": true,
+            "type": "int64"
+          }
+        ]
+      },
+      {
+        "field": "op",
+        "optional": true,
+        "type": "string"
+      },
+      {
+        "field": "ts_ms",
+        "optional": true,
+        "type": "int64"
+      },
+      {
+        "field": "transaction",
+        "optional": true,
+        "type": "struct",
+        "fields": [
+          {
+            "field": "id",
+            "optional": false,
+            "type": "string"
+          },
+          {
+            "field": "total_order",
+            "optional": false,
+            "type": "int64"
+          },
+          {
+            "field": "data_collection_order",
+            "optional": false,
+            "type": "int64"
+          }
+        ]
+      }
+    ]
+  },
+  "payload": {
+    "patch": null,
+    "filter": null,
+    "op": "c",
+    "updateDescription": null,
+    "after": "{\"_id\": }",
+    "source": {
+      "ord": 36,
+      "rs": "atlas-7oo52f-shard-0",
+      "h": null,
+      "txnNumber": null,
+      "stxnid": null,
+      "collection": "collection",
+      "version": "1.9.2.Final",
+      "lsid": null,
+      "sequence": null,
+      "connector": "mongodb",
+      "name": "mongo-pl0.PRD.dataServiceCachedb.34001b",
+      "tord": null,
+      "ts_ms": 1680557407000,
+      "snapshot": "true",
+      "db": "dataServiceCachedb"
+    },
+    "ts_ms": 1680557428539,
+    "transaction": null
+  }
+}

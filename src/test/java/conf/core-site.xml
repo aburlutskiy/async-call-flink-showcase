@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!-- Put site-specific property overrides in this file. -->
+<configuration>
+    <property>
+        <name>fs.s3a.access.key</name>
+        <value>mock</value>
+    </property>
+
+    <property>
+        <name>fs.s3a.secret.key</name>
+        <value>mock</value>
+    </property>
+
+    <property>
+        <name>fs.s3a.endpoint</name>
+        <value>http://localhost:4566</value>
+    </property>
+</configuration>
