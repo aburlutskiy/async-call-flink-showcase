@@ -23,9 +23,22 @@
         <scala-library.version>2.13.10</scala-library.version>
         <lombok.version>1.18.24</lombok.version>
         <jackson.version>2.14.2</jackson.version>
+        <newrelic-api.version>8.1.0</newrelic-api.version>
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.newrelic.agent.java</groupId>
+            <artifactId>newrelic-api</artifactId>
+            <version>${newrelic-api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.2.1</version>
+        </dependency>
 
         <!--Jackson-->
         <dependency>

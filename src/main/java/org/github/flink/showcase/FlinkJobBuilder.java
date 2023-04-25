@@ -1,14 +1,14 @@
 package org.github.flink.showcase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.github.flink.showcase.debezium.DebeziumEnvelope;
 import lombok.Builder;
-import lombok.Data;
 import lombok.ToString;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.common.serialization.Encoder;
+import org.apache.flink.api.common.time.Time;
 import org.apache.flink.configuration.MemorySize;
 import org.apache.flink.connector.file.sink.FileSink;
 import org.apache.flink.connector.file.src.FileSource;
@@ -20,12 +20,12 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.async.AsyncRetryStrategy;
 import org.apache.flink.streaming.api.functions.sink.filesystem.OutputFileConfig;
 import org.apache.flink.streaming.api.functions.sink.filesystem.bucketassigners.DateTimeBucketAssigner;
 import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy;
 import org.apache.flink.streaming.util.retryable.AsyncRetryStrategies;
 import org.apache.flink.streaming.util.retryable.RetryPredicates;
+import org.github.flink.showcase.debezium.DebeziumEnvelope;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -42,8 +42,8 @@ public class FlinkJobBuilder implements Serializable {
     private final String source;
     private final String output;
     private final String externalServiceURL;
-    private final Integer httpClientThreads;
-    private final Integer connectionTimeoutInMinutes;
+    private final Integer maxHttpClientConnections;
+    private final Integer connectionTimeoutInSeconds;
     private final Integer asyncCapacity;
 
     private DataStream<String> createSourceFromStaticConfig(StreamExecutionEnvironment env) {
@@ -107,7 +107,7 @@ public class FlinkJobBuilder implements Serializable {
 
         // or apply the async I/O transformation with retry
         // create an async retry strategy via utility class or a user defined strategy
-        AsyncRetryStrategy<DebeziumEnvelope> asyncRetryStrategy =
+        AsyncRetryStrategies.ExponentialBackoffDelayRetryStrategy<DebeziumEnvelope> asyncRetryStrategy =
                 new AsyncRetryStrategies.ExponentialBackoffDelayRetryStrategyBuilder<DebeziumEnvelope>(
                         Integer.MAX_VALUE,
                         1000L,
@@ -121,10 +121,10 @@ public class FlinkJobBuilder implements Serializable {
         // apply the async I/O transformation with retry
         AsyncDataStream.orderedWaitWithRetry(debeziumEnvelopeStream,
                         new AsyncExternalCall(externalServiceURL,
-                                httpClientThreads,
-                                connectionTimeoutInMinutes),
-                        connectionTimeoutInMinutes * 2,
-                        TimeUnit.MINUTES,
+                                maxHttpClientConnections,
+                                connectionTimeoutInSeconds),
+                        connectionTimeoutInSeconds * 2,
+                        TimeUnit.SECONDS,
                         asyncCapacity,
                         asyncRetryStrategy)
                 .name("ExternalCall")
@@ -155,7 +155,7 @@ public class FlinkJobBuilder implements Serializable {
         checkpointConfig.setMinPauseBetweenCheckpoints(500);
 
         // checkpoints have to complete within one minute, or are discarded
-        checkpointConfig.setCheckpointTimeout(60000);
+        checkpointConfig.setCheckpointTimeout(120000);
         // only 10 consecutive checkpoint failures are tolerated
         checkpointConfig.setTolerableCheckpointFailureNumber(10);
         // allow only one checkpoint to be in progress at the same time
@@ -166,6 +166,13 @@ public class FlinkJobBuilder implements Serializable {
                 CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
         // enables the unaligned checkpoints
         checkpointConfig.enableUnalignedCheckpoints();
+
+        env.setRestartStrategy(RestartStrategies.exponentialDelayRestart(
+                Time.seconds(5),
+                Time.minutes(5),
+                1.2,
+                Time.hours(1),
+                0.1));
 
         env.setMaxParallelism(Short.MAX_VALUE);
     }
